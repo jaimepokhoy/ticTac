@@ -20,48 +20,76 @@
       constructor(props) {
         super(props);
         this.state = {
-          started: false
+          started: false,
+          turn: "X",
+          grid: ["", "", "", "", "", "", "", "", ""]
         };
 
         this.startGame = this.startGame.bind(this);
+        this.madeMove = this.madeMove.bind(this);
+      }
+
+      startGame() {
+        this.setState({started: true});
+      }
+
+      madeMove(index, player) {
+        let copy = this.state.grid;
+        let newTurn;
+        copy[index] = player;
+
+        if (this.state.turn === "X") {
+          newTurn = "O";
+        } else {
+          newTurn = "X";
+        }
+
+        if (calculateWinner(copy)) {
+          this.setState({grid: ["W", "I", "N", "W", "I", "N", "W", "I", "N"]})
+        } else {
+          this.setState({grid: copy, turn: newTurn});
+        }
+
 
       }
 
       render() {
         return(
-          <Grid started={this.state.started} onStart={this.startGame}/>
+          <Grid started={this.state.started} turn={this.state.turn} game={this.state.grid} handleStart={this.startGame} handleMove={this.madeMove} />
         )
       }
     }
 
     class Grid extends React.Component {
-      constructor(props) {
 
+      constructor(props) {
+        super(props);
+
+        this.madeMove = this.madeMove.bind(this);
+      }
+
+      madeMove(index) {
+        this.props.handleMove(index, this.props.turn);
       }
 
       render() {
-        var grid = [];
-        
-        for (var i = 0; i <= 9; i++) {
-          grid[i] = "";
-        }
 
         return (
           <div>
             <div className="board-row">
-              <Square status={grid[0]}/>
-              <Square status={grid[1]}/>
-              <Square status={grid[2]}/>
+              <Square num="0" status={this.props.game[0]} clicked={this.madeMove} />
+              <Square num="1" status={this.props.game[1]} clicked={this.madeMove}/>
+              <Square num="2" status={this.props.game[2]} clicked={this.madeMove}/>
             </div>
             <div className="board-row">
-              <Square status={grid[3]}/>
-              <Square status={grid[4]}/>
-              <Square status={grid[5]}/>
+              <Square num="3" status={this.props.game[3]} clicked={this.madeMove}/>
+              <Square num="4" status={this.props.game[4]} clicked={this.madeMove}/>
+              <Square num="5" status={this.props.game[5]} clicked={this.madeMove}/>
             </div>
             <div className="board-row">
-              <Square status={grid[6]}/>
-              <Square status={grid[7]}/>
-              <Square status={grid[8]}/>
+              <Square num="6" status={this.props.game[6]} clicked={this.madeMove}/>
+              <Square num="7" status={this.props.game[7]} clicked={this.madeMove}/>
+              <Square num="8" status={this.props.game[8]} clicked={this.madeMove}/>
             </div>
           </div>
         )
@@ -69,13 +97,38 @@
     }
 
     class Square extends React.Component {
+      constructor(props) {
+        super(props);
+
+        this.handleClick = this.handleClick.bind(this);
+      }
+
+      handleClick(e) {
+        this.props.clicked(this.props.num);
+      }
+
       render() {
         return (
-          <button className="square">
+          <button className="square" onClick={this.handleClick}>
             {this.props.status}
           </button>
         )
       }
+    }
+
+    function calculateWinner(squares) {
+      var lines = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
+      for (var i = 0; i < lines.length; i++) {
+        var _lines$i = lines[i];
+        var a = _lines$i[0];
+        var b = _lines$i[1];
+        var c = _lines$i[2];
+
+        if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+          return squares[a];
+        }
+      }
+      return null;
     }
 
     ReactDOM.render(<Game />, document.getElementById('container'));
