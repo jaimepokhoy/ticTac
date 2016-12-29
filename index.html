@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>Tic Tac Toe</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
@@ -16,36 +17,51 @@
   <script src="https://fb.me/react-dom-0.14.7.min.js"></script>
   <script type="text/babel">
     class Game extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+          started: false
+        };
+
+        this.startGame = this.startGame.bind(this);
+
+      }
+
       render() {
         return(
-          <Grid />
+          <Grid started={this.state.started} onStart={this.startGame}/>
         )
       }
     }
 
     class Grid extends React.Component {
+      constructor(props) {
+
+      }
+
       render() {
         var grid = [];
+        
         for (var i = 0; i <= 9; i++) {
-          grid.push(<Square />);
+          grid[i] = "";
         }
 
         return (
           <div>
-            <div>
-              <Square />
-              <Square />
-              <Square />
+            <div className="board-row">
+              <Square status={grid[0]}/>
+              <Square status={grid[1]}/>
+              <Square status={grid[2]}/>
             </div>
-            <div>
-              <Square />
-              <Square />
-              <Square />
+            <div className="board-row">
+              <Square status={grid[3]}/>
+              <Square status={grid[4]}/>
+              <Square status={grid[5]}/>
             </div>
-            <div>
-              <Square />
-              <Square />
-              <Square />
+            <div className="board-row">
+              <Square status={grid[6]}/>
+              <Square status={grid[7]}/>
+              <Square status={grid[8]}/>
             </div>
           </div>
         )
@@ -56,10 +72,13 @@
       render() {
         return (
           <button className="square">
+            {this.props.status}
           </button>
         )
       }
     }
+
+    ReactDOM.render(<Game />, document.getElementById('container'));
 
   </script>
 
